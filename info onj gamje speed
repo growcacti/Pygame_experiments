@@ -1,0 +1,377 @@
+
+Stack Overflow
+
+    Products
+
+Pygame is running slow
+Asked 3 years, 1 month ago
+Modified 2 years, 7 months ago
+Viewed 2k times
+4
+
+enter image description here I am creating a game called "Survival Island" and have just created the start screen. The pygame lags too much after doing an event (takes time to respond).
+
+Here is my source code:
+
+#packages
+import pygame
+import sys
+from sys import exit
+#initialization
+pygame.init()
+#display surf
+width = 600
+height = 400
+surface  = pygame.display.set_mode((width,height))
+clock = pygame.time.Clock()#for fps
+#caption
+pygame.display.set_caption('Survival Island')
+
+#variables
+mousex = 0
+mousey = 0
+#booleans
+play = True #entered playmode
+canQuitOnStart = True     #game can be quitted on start
+drawStartScreen = True #start screen drawed
+running = True # game is running
+#definitions
+def quitOnStart():     #quitting the game
+    #can be seen if rect is drawn [pygame.draw.rect(surface,(0,0,255),(550,350,40,40))]
+    global mousex,mousey,running
+    for event in pygame.event.get():
+       if event.type == pygame.MOUSEBUTTONDOWN: #quit on pressing x on start screen
+            if mousex > 550 and mousey > 350 and mousex <590 and mousey <390:
+                print('Exit1')
+                running = False
+
+def drawStart():      #drawing start menu
+    START_Image = pygame.image.load('START_Image.png').convert()
+    surface.blit(START_Image,(0,0))
+    pygame.display.update()
+
+def playGame():
+    #play on clicking on "play"
+    global mousex,mousey,canQuitOnStart,drawStartScreen
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+           if mousex > 415 and mousey >190 and mousex <70 and mousey <30: # can be seen if rect is drawn [pygame.draw.rect(surface,(0,0,255),(415,190,70,30))]
+                canQuitOnStart = False
+                drawStartScreen = False
+                screen.fill((0,0,0))
+                pygame.display.update()
+if drawStartScreen == True:
+        drawStart()
+
+def main():
+    if play == True:
+        playGame()
+    if canQuitOnStart == True:
+        quitOnStart()
+
+#main loop
+while running:
+    #get mouse position
+    mousex,mousey = pygame.mouse.get_pos()
+    # fps is 60
+    clock.tick(120)
+    # quit button event
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    # main function
+    if __name__ == '__main__':
+        main()
+
+pygame.quit()#quits after event
+
+After running, The pygame window displays the image. It takes several tries to close the window after running(the 'X' on the bottom right corner)
+
+I am a newbie programmer so.. I want some pygame courses to do (please suggest some).
+
+Thank you !!!
+
+    pythonpython-3.xpygamepygame-surface
+
+Share
+Improve this question
+Follow
+edited Oct 21, 2020 at 11:47
+Rabbid76's user avatar
+Rabbid76
+200k2525 gold badges129129 silver badges171171 bronze badges
+asked Apr 10, 2020 at 6:01
+Raghav Gohil's user avatar
+Raghav Gohil
+4566 bronze badges
+
+    I would start by trying to figure out which specific step is taking so long. Is it getting the click event right away? Is it the screen.fill((0,0,0)) line that's taking so long? or the pygame.display.update()? – 
+    QuinnFreedman
+    Apr 10, 2020 at 6:12
+
+Add a comment
+1 Answer
+Sorted by:
+11
+
+The game is running slow because you load the START_Image in every frame. pygame.image.load is a very expensive operation, because it has to read the images from the data store. Load START_Image once at startup
+
+surface  = pygame.display.set_mode((width,height))
+clock = pygame.time.Clock()#for fps
+#caption
+pygame.display.set_caption('Survival Island')
+
+START_Image = pygame.image.load('START_Image.png').convert()
+
+Do not call pygame.display.update() more than once in the main application loop. pygame.display.update() removes the events from the queue, thus you'll get each event just once. Get the list of events once (events = pygame.event.get()) and pass the list of events to the functions:
+
+while running:
+    # [...]
+    events = pygame.event.get()
+    for event in events:
+        # [...]
+        
+    if play == True:
+        playGame(events)
+    if canQuitOnStart == True:
+        quitOnStart(events)
+
+Further more, draw the scene in the application loop, rather the event loop. It is sufficient to do 1 single pygame.display.update() after drawing the entire scene.
+
+The button click condition is wrong. It has to be:
+
+if mousex > 550 and mousey > 350 and mousex <590 and mousey <390:
+
+if  415 < mousex < 415+70 and 190 < mousey < 190+30:
+
+Anyway I recommend to use pygame.Rect and collidepoint:
+
+if pygame.Rect(415,190,70,30).collidepoint(mousex, mousey):
+
+See the example:
+
+#packages
+import pygame
+import sys
+from sys import exit
+#initialization
+pygame.init()
+#display surf
+width = 600
+height = 400
+surface  = pygame.display.set_mode((width,height))
+clock = pygame.time.Clock()#for fps
+#caption
+pygame.display.set_caption('Survival Island')
+
+START_Image = pygame.image.load('START_Image.png').convert()
+    
+#variables
+mousex = 0
+mousey = 0
+#booleans
+play = True #entered playmode
+canQuitOnStart = True     #game can be quitted on start
+drawStartScreen = True #start screen drawed
+running = True # game is running
+#definitions
+def quitOnStart(events):     #quitting the game
+    #can be seen if rect is drawn [pygame.draw.rect(surface,(0,0,255),(550,350,40,40))]
+    global mousex,mousey,running
+    for event in events:
+       if event.type == pygame.MOUSEBUTTONDOWN: #quit on pressing x on start screen
+            if mousex > 550 and mousey > 350 and mousex <590 and mousey <390:
+                print('Exit1')
+                running = False
+
+def drawStart():      #drawing start menu
+    surface.blit(START_Image,(0,0))
+
+def playGame(events):
+    #play on clicking on "play"
+    global mousex,mousey,canQuitOnStart,drawStartScreen
+    for event in events:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+           if pygame.Rect(415,190,70,30).collidepoint(mousex, mousey): # can be seen if rect is drawn [pygame.draw.rect(surface,(0,0,255),(415,190,70,30))]
+                canQuitOnStart = False
+                drawStartScreen = False
+    surface.fill((0,0,0))
+    if drawStartScreen == True:
+        drawStart()
+    #pygame.draw.rect(surface, (255, 0, 0), (415,190,70,30))
+    pygame.display.update()
+
+def main():
+    global canQuitOnStart, play, running, mousex, mousey
+    #main loop
+    while running:
+        #get mouse position
+        mousex,mousey = pygame.mouse.get_pos()
+        # fps is 60
+        clock.tick(120)
+        # quit button event
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+        # main function
+        if play == True:
+            playGame(events)
+        if canQuitOnStart == True:
+            quitOnStart(events)
+
+if __name__ == '__main__':
+    main()
+
+Share
+Improve this answer
+Follow
+edited Oct 15, 2020 at 17:19
+answered Apr 10, 2020 at 6:13
+Rabbid76's user avatar
+Rabbid76
+200k2525 gold badges129129 silver badges171171 bronze badges
+Add a comment
+Your Answer
+
+Sign up or log in
+Post as a guest
+Name
+Email
+
+Required, but never shown
+
+By clicking “Post Your Answer”, you agree to our terms of service and acknowledge that you have read and understand our privacy policy and code of conduct.
+Not the answer you're looking for? Browse other questions tagged
+
+    pythonpython-3.xpygamepygame-surface
+
+or ask your own question.
+
+    The Overflow Blog
+
+More on our AI future: building course recommendations and a new data platform
+
+    This product could help build a more equitable workplace (Ep. 575)
+    Featured on Meta
+    AI/ML Tool examples part 3 - Title-Drafting Assistant
+    We are graduating the updated button styling for vote arrows
+    We are graduating the "Related questions using Machine Learning" experiment
+    The [connect] tag is being burninated
+    Temporary policy: ChatGPT is banned
+    Stack Overflow will be testing a title-drafting assistant, and we’d like your...
+
+Linked
+7
+Pygame: Drawing a border of a rectangle
+1
+In Pygame, can you draw many sprites to the screen each loop without significant delay?
+1
+why is my code really slow and how can i improve it?
+0
+Why is pygame slowing down?
+1
+I'm making a little game on pygame, but I don't know why it's running so slow
+0
+How can I better optimize this pygame project? It's too slow
+1
+Pygame image to surface fps
+1
+Increase FPS in pygame
+0
+Pygame Dirty Rec Animation
+0
+python time lag/delay when using pygame
+See more linked questions
+Related
+2
+pygame keeps bogging down
+0
+Pygame program is running slow. Why?
+0
+My Pygame game is running really slow?
+5
+Pygame cause for low FPS. How can the performance be improved?
+1
+Pygame running super slow (~2 fps)
+2
+Improve performance while executing pygame?
+3
+Why is my platform game in PyGame suddenly so slow?
+0
+My pygame code is running horribly slow, how can I fix it?
+1
+Why does pygame load slow?
+1
+Why is this simple pygame program lagging?
+Hot Network Questions
+
+    Can someone identify what set(s) these three bags belong to?
+    What does the sentence "it's only dying a bit later than I would have, because I'm never going over to the Dark Side!" mean, especially its last part?
+    Non-native speakers struggle to come up with decent variable names and function names
+    Why do capacitors in series have same charge?
+    Can large bike size will be solved by replacing the crank arm with a longer length?
+    How do I make sure that a hook is not misinterpreted as a writing mistake or plot holes?
+    Plotting in Python
+    Three boats problem
+    Dishwasher and disposal wiring on seperate circuits to one yoke and common neutral
+    How can I "properly" merge two cylinders so I can bevel the connection between them?
+    Néron model, torsion and ramification
+    Can this be a better way of defining subsets?
+    how to get metadata as a `0x${string}` type
+    I want to know the meaning of 还 which is used inside 你使过的东西别乱放，还放回原处。
+    How did the frequent blood hunts further Queen Anne's ambitions before the Fall of London?
+    What is the serial protocol commonly used over RS-232 (among other links) and where did it come from?
+    How to select N points within each geometry
+    How do I completely remove LXD from my system?
+    How to printf "`" and "%" character inside array on aliasses?
+    dispersion parameter in Poisson models
+    What control inputs to make if a wing falls off?
+    Does using the Knock spell on the front door of Icespire Hold wake Cryovain?
+    Are legislators ever asked to explain their intent in Supreme Court cases?
+    Is Guardians 3 a nod to The Island of Dr. Moreau?
+
+Question feed
+
+Stack Overflow
+
+    Questions
+    Help
+
+Products
+
+    Teams
+    Advertising
+    Collectives
+    Talent
+
+Company
+
+    About
+    Press
+    Work Here
+    Legal
+    Privacy Policy
+    Terms of Service
+    Contact Us
+    Cookie Settings
+    Cookie Policy
+
+Stack Exchange Network
+
+    Technology
+    Culture & recreation
+    Life & arts
+    Science
+    Professional
+    Business
+    API
+    Data
+
+    Blog
+    Facebook
+    Twitter
+    LinkedIn
+    Instagram
+
+Site design / logo © 2023 Stack Exchange Inc; user contributions licensed under CC BY-SA. rev 2023.5.30.43465

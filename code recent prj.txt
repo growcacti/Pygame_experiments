@@ -1,0 +1,466 @@
+
+	
+import pygame as pg
+from pygame.locals import *
+
+
+
+pg.init()
+width = 1200
+height = 800
+screen = pg.display.set_mode((width,height))
+bg_img = pg.image.load('bigbg.png')
+#bg_img = pg.transform.scale(bg_img,(width,height))
+ 
+i = 0
+ 
+loop = True
+while loop:
+    screen.fill((0,0,0))
+    screen.blit(bg_img,(i,i))
+    screen.blit(bg_img,(width+i,height+i))
+##    if (i==-width):
+##        screen.blit(bg_img,(width+i,0))
+##        i=0
+##    i-= 0.5
+    for event in pg.event.get():
+        if event.type == QUIT:
+            loop = False
+
+    pressed = pg.key.get_pressed()
+     
+
+    if pressed[pg.K_UP]:
+        i-= 15
+        screen.blit(bg_img,(0, height+i))
+      
+    if pressed[pg.K_DOWN]:
+        i += 15
+        screen.blit(bg_img,(0, height+i))
+          
+    if pressed[pg.K_LEFT]:
+        i-= 15
+        screen.blit(bg_img,(width+i, 0))
+
+    if pressed[pg.K_RIGHT]:
+        i += 15
+        screen.blit(bg_img,(width + i, 0))     
+    pg.display.update()
+pg.quit()
+
+
+
+	
+import pygame as pg
+import sys
+ 
+# 1200 x 630
+
+W = 300
+H = 158
+HW = W / 2
+HH = H / 2
+
+screen = pg.display.set_mode((1200, 800))
+clock = pg.time.Clock()
+background = pg.Surface((W, H))
+background_rect = pg.Rect(600, 400, W, H)
+bg_img = pg.image.load("bg_img.png") 
+def grab(x, y, w, h):
+    "Grab a part of the screen"
+    # get the dimension of the sub surface space background
+    rect = pg.Rect(x, y, w, h)
+    # copy the part of the screen
+    sub = bg_img.subsurface(rect)
+    # create another surspace with dimensions
+    # This is done to unlock the screen surspace
+    # Unlock screen surspace here:
+    screenshot = pg.Surface((w, h))
+    screenshot.blit(sub, (0, 0))
+    return screenshot
+ 
+ 
+def blit(sub, x, y):
+    screen.blit(sub, (x, y))
+ 
+ 
+def quit():
+    pg.quit()
+    sys.exit()
+ 
+	
+import pygame as pg
+from pygame.locals import *
+
+
+
+pg.init()
+width = 1200
+height = 800
+screen = pg.display.set_mode((width,height))
+bg_img = pg.image.load('bg555.png')
+#bg_img = pg.transform.scale(bg_img,(width,height))
+ 
+i = 0
+ 
+loop = True
+while loop:
+    screen.fill((0,0,0))
+    screen.blit(bg_img,(i,i))
+    screen.blit(bg_img,(width+i,height+i))
+##    if (i==-width):
+##        screen.blit(bg_img,(width+i,0))
+##        i=0
+##    i-= 0.5
+    for event in pg.event.get():
+        if event.type == QUIT:
+            loop = False
+
+    pressed = pg.key.get_pressed()
+     
+
+    if pressed[pg.K_UP]:
+        i-= 15
+        screen.blit(bg_img,(0, height+i))
+      
+    if pressed[pg.K_DOWN]:
+        i += 15
+        screen.blit(bg_img,(0, height+i))
+
+
+
+
+import pygame as pg
+import random
+
+
+
+pg.init()
+class Constants:
+    # reduced W an H to use less  memory
+    W = 5200  # size of space used for game world background
+    H = 3200  # 2nd surface over screen
+    HW = W / 2  # Finding center of game world
+    HH = H / 2
+    SCR_W = W / 4  # view screen settings
+    SCR_H =  H / 4
+    BLACK = ((0,0,0))
+    BGCONSTANT = 8
+    sizex = int(W)
+    sizey = int(H)
+    exsize = (W, H)
+    screen = display.set_mode((SCR_W, SCH_H))
+
+con = Constants()
+class Background(pg.sprite.Sprite):
+    def __init__(self, pos, camx, camy):
+        super().__init__()
+
+        self.sizex = int(con.W)
+        self.sizey = int(con.H)
+        self.exsize = (con.W, con.H)
+
+        self.center_pos = (con.HW, con.HH)
+        self.bg = pg.Surface(con.exsize)
+        self.rect = pg.Rect(self.bg.get_rect())
+        self.bg.set_colorkey((BLACK))
+        self.bg.fill((BLACK))
+        #self.bg2 = pg.image.load("gx/bg.png").convert_alpha()
+        self.bg_imgs = []
+        self.camx = camx
+        self,camy = camy
+        # or self.camx, self.camy = player.camera        not sure, would this work??
+        #self.bg.blit(self.bg2, self.rect)
+        self.bg_obj = []  #store all bg objects
+        self.bg_info = {} # store infomation about bg objects
+        self.bg_loader
+    def bg_loader (self):
+        
+        for i in range(1, 10):
+             self.bg_imgs.append(pg.image.load('bg%s.png' % i)).convert_alpha()
+             #the for loop loads background images bg1.png to bg4.png and puts them in a list to store
+
+
+        for i in range(10):
+            self.bg_obj.append(self.new_bg(self.camx, self.camy))
+            self.bg_obj[i]['x'] = random.randint(0, W)
+            self.bg_obj[i]['y'] = random.randint(0, H)
+            #put images in random positions
+        self,draw_bg()
+        self.new_bg()
+        self.update()
+      
+    def draw_bg(self):
+         for bg in self.bg:
+           bgg_rect = pg.Rect( (bg_obj['x'] - camerax,
+                                  bg_obj['y'] - cameray,
+                                  bg_obj['width'],
+                                  bg_obj['height']) )
+            screen.blit(self.bg_imgs[self.bg_obj['self.bg_img']], bg)
+
+
+
+
+    def new_bg(self):
+        #info about the list in a list
+        self.bg_info['self.bg_img'] = random.randint(0, len(self.bg_imgs) - 1)
+        self.bg_info['width']  = self.bg_imgs[0].get_width()
+        self.bg_info['height'] = self.bg_imgs[0].get_height()
+        self.bg_info['x'], self.bg_info['y'] = get_newpos(self.camx, self.camy, self.bg_info['width'], self.bg_info['height'])
+        self.bg_info['rect'] = pg.Rect( (self.bg_info['x'], self.bg_info['y'], self.bg_info['width'], self.bg_info['height']) )
+        return self.bg_info
+
+    def update(self):
+        # delete unseen background images that are a certain distance away
+        for i in range(len(self.bg_obj) - 1, -1, -1):
+            if self.outside_area(self.camx, self.camy, self.bg_obj[i]):
+                del self.bg_obj[i]
+         # keep adding new background as the player moves to keep space infinite
+        while len(self.bg_obj) < BG_CONSTANT:
+            self.bg_obj.append((self.camx, self.camy))
+    def get_newpos(camx, camy, obj_w, obj_h):
+        # create a Rect of the camera view
+        #create random coordinates for background images that need to be added
+        self.cam_rect = pg.Rect(camx, camy, W, H)
+        while True:
+            x = random.randint(camx - W * 2, camx + (2 * W))
+            y = random.randint(camy - H * 2, camy + (2 * H))
+            # create a Rect object with the random coordinates and use colliderect()
+            # to make sure the right edge isn't in the camera view.
+            obj_rect = pg.Rect(x, y, obj_w, obj_h)
+            if not obj_rect.colliderect(cam_rect):
+                return x, y
+
+
+    def outside_area(self, camx, camy):
+        # Return False if camx and camy are more than
+        # a half-window length beyond the edge of the window.
+        bound_leftedge = camx - W * 3
+    
+        bound_topedge = camy - H * 3
+        boundsrect = pg.Rect(bound_leftedge, bounds_topedge, W * 3, H * 3)
+        objects_rect = pg.Rect(objects_rect['x'], objects_rect['y'], objects_rect['width'], objects_rect['height'])
+        return not boundsrect.colliderect(objects_rect)
+
+
+   
+
+
+
+
+
+
+
+##    class planets(self):
+##           def __init__(self):
+##        self.imgdict = {p1 : pg.image.load("gx/P1.png").convert_alpha(),
+##                           p2 = pg.image.load("gx/P2.png").convert_alpha(),
+##                           p3 : pg.image.load("gx/P3.png").convert_alpha(),
+##                           p4 : pg.image.load("gx/P4.png").convert_alpha(),
+##                           p5 : pg.image.load("gx/P5.png").convert_alpha(),
+##                           p6 : pg.image.load("gx/P6.png").convert_alpha()
+##                           p7 : pg.image.load("gx/P7.png").convert_alpha(),
+##                           p8 : pg.image.load("gx/P8.png").convert_alpha(),
+##                           p9 : pg.image.load("gx/P9.png").convert_alpha(),
+##                           p10 : pg.image.load("gx/P10.png").convert_alpha(),
+##                           p11 : pg.image.load("gx/P11.png").convert_alpha(),
+##                           p12 : pg.image.load("gx/P12.png").convert_alpha(),
+##                           p13 : pg.image.load("gx/P13.png").convert_alpha(),
+##                           p14 : pg.image.load("gx/P14.png").convert_alpha(),
+##                           p15 : pg.image.load("gx/P15.png").convert_alpha(),
+##                           p16 : pg.image.load("gx/P16.png").convert_alpha(),
+##                           p17 : pg.image.load("gx/P17.png").convert_alpha(),
+##                           p18 : pg.image.load("gx/P18.png").convert_alpha(),
+##
+##                           p19 : pg.image.load("gx/P19.png").convert_alpha(),
+##
+##                           p20 : pg.image.load("gx/P20.png").convert_alpha(),
+##                           p21 : pg.image.load("gx/P21.png").convert_alpha(),
+##
+##                           p22 : pg.image.load("gx/P22.png").convert_alpha(),
+##
+##                           p23 : pg.image.load("gx/P23.png").convert_alpha(),
+##                           p24 : pg.image.load("gx/P24.png").convert_alpha(),
+##                           p25 : pg.image.load("gx/P25.png").convert_alpha(),
+##
+##                           p26 : pg.image.load("gx/P26.png").convert_alpha(),
+##                           p27 : pg.image.load("gx/P27.png").convert_alpha(),
+##
+##                           p28 : pg.image.load("gx/P28.png").convert_alpha(),
+##                           p29 : pg.image.load("gx/P29.png").convert_alpha(),
+##                           p30 : pg.image.load("gx/P30.png").convert_alpha(),
+##                           p31 : pg.image.load("gx/P31.png").convert_alpha(),
+##                           p32 : pg.image.load("gx/P32.png").convert_alpha(),
+##
+##                           p33 : pg.image.load("gx/P33.png").convert_alpha(),
+##
+##                           p34 : pg.image.load("gx/P34.png").convert_alpha(),
+##                           p35 : pg.image.load("gx/P35.png").convert_alpha(),
+##                           p36 : pg.image.load("gx/P36.png").convert_alpha(),
+##
+##                           p37 : pg.image.load("gx/P37.png").convert_alpha(),
+##
+##                           p38 : pg.image.load("gx/P38.png").convert_alpha(),
+##                           p39 : pg.image.load("gx/P39.png").convert_alpha(),
+##
+##                           p40 : pg.image.load("gx/P40.png").convert_alpha(),
+##
+##                           p41 : pg.image.load("gx/P41.png").convert_alpha(),
+##                           p42 : pg.image.load("gx/P42.png").convert_alpha(),
+##                           p43 : pg.image.load("gx/P43.png").convert_alpha(),
+##
+##        self.rectdict ={  p1_rect : p1.get_rect(center=(100, 6600)),
+##                          p2_rect : p2.get_rect(center=(1200, 10000)),
+##                          p3_rect : p3.get_rect(center=(1500, 4600)),
+##                          p4_rect : p4.get_rect(center=(2000, 13000)),
+##                          p5_rect : p5.get_rect(center=(3300, 10000)),
+##                          p6_rect : p6.get_rect(center=(4700, 8800)),
+##                          p7_rect : p7.get_rect(center=(3600, 300)),
+##                          p8_rect : p8.get_rect(center=(4200, 1800)),
+##                          p9_rect : p9.get_rect(center=(5000, 14000)),
+##                          p10_rect : p10.get_rect(center=(5200, 7100)),
+##                          p11_rect : p11.get_rect(center=(5600, 12000)),
+##                          p12_rect : p12.get_rect(center=(5800, 14400)),
+##                          p13_rect : p13.get_rect(center=(6200, 6000)),
+##                          p14_rect : p14.get_rect(center=(6400, 9600)),
+##                          p15_rect : p15.get_rect(center=(6600, 11000)),
+##                          p16_rect : p16.get_rect(center=(6800, 3500)),
+##                          p17_rect : p17.get_rect(center=(7000, 13000)),
+##                          p18_rect : p18.get_rect(center=(7200, 8000)),
+##                          p19_rect : p19.get_rect(center=(7500, 9000)),
+##                          p20_rect : p20.get_rect(center=(7800, 800)),
+##                          p21_rect : p21.get_rect(center=(8200, 10000)),
+##                          p22_rect : p22.get_rect(center=(8400, 500)),
+##                          p23_rect : p23.get_rect(center=(8600, 9000)),
+##                          p24_rect : p24.get_rect(center=(8800, 12300)),
+##                          p25_rect : p25.get_rect(center=(9200, 13000)),
+##                          p26_rect : p26.get_rect(center=(9600, 1800)),
+##                          p27_rect : p27.get_rect(center=(10000, 10000)),
+##                          p28_rect : p28.get_rect(center=(10500, 800)),
+##                          p29_rect : p29.get_rect(center=(11000, 1200)),
+##                          p30_rect : p30.get_rect(center=(11200, 2000)),
+##                          p31_rect : p31.get_rect(center=(11400, 4000)),
+##                          p32_rect : p32.get_rect(center=(12000, 4500)),
+##                          p33_rect : p33.get_rect(center=(12500, 5600)),
+##                          p34_rect : p34.get_rect(center=(13000, 6500)),
+##                          p35_rect : p35.get_rect(center=(13500, 8500)),
+##                          p36_rect : p36.get_rect(center=(14200, 12000)),
+##                          p37_rect : p37.get_rect(center=(5500, 9000)),
+##                          p38_rect : p38.get_rect(center=(9000, 3200)),
+##                          p39_rect : p39.get_rect(center=(4400, 7000)),
+##                          p40_rect : p40.get_rect(center=(7100, 9500)),
+##                          p41_rect : p41.get_rect(center=(8200, 3900)),
+##                          p42_rect : p42.get_rect(center=(8900, 500)),
+##                          p43_rect : p43.get_rect(center=(8800, 7000))
+##
+##
+##        
+       
+
+        
+
+##        self.bg.blit(p1, p1_rect)
+##        self.bg.blit(p2, p2_rect)
+##        self.bg.blit(p3, p3_rect)
+##        self.bg.blit(p4, p4_rect)
+##
+##        self.bg.blit(p5, p5_rect)
+##        self.bg.blit(p6, p6_rect)
+##        self.bg.blit(p7, p7_rect)
+##
+##        self.bg.blit(p8, p8_rect)
+##        self.bg.blit(p9, p9_rect)
+##        self.bg.blit(p10, p10_rect)
+##        self.bg.blit(p11, p11_rect)
+##        self.bg.blit(p12, p12_rect)
+##        self.bg.blit(p13, p13_rect)
+##        self.bg.blit(p14, p14_rect)
+##        self.bg.blit(p15, p15_rect)
+##        self.bg.blit(p16, p16_rect)
+##        self.bg.blit(p17, p17_rect)
+##        self.bg.blit(p18, p18_rect)
+##        self.bg.blit(p19, p19_rect)
+##        self.bg.blit(p20, p20_rect)
+##        self.bg.blit(p21, p21_rect)
+##        self.bg.blit(p22, p22_rect)
+##        self.bg.blit(p23, p23_rect)
+##        self.bg.blit(p24, p24_rect)
+##        self.bg.blit(p25, p25_rect)
+##
+##        self.bg.blit(p26, p26_rect)
+##        self.bg.blit(p27, p27_rect)
+##        self.bg.blit(p28, p28_rect)
+##        self.bg.blit(p29, p29_rect)
+##        self.bg.blit(p30, p30_rect)
+##        self.bg.blit(p31, p31_rect)
+##        self.bg.blit(p32, p32_rect)
+##        self.bg.blit(p33, p33_rect)
+##        self.bg.blit(p34, p34_rect)
+##        self.bg.blit(p35, p35_rect)
+##        self.bg.blit(p36, p36_rect)
+##        self.bg.blit(p37, p37_rect)
+##        self.bg.blit(p38, p38_rect)
+##        self.bg.blit(p39, p39_rect)
+##        self.bg.blit(p40, p40_rect)
+##        self.bg.blit(p41, p41_rect)
+##        self.bg.blit(p42, p42_rect)
+##        self.bg.blit(p43, p43_rect)
+
+        pg.display.flip()
+
+        
+
+    
+def main():
+    pg.init()
+
+    W = 800
+    H = 800
+
+    clock= pg.time.Clock()
+    
+    screen = pg.display.set_mode((W, H))
+    screen_rect = screen.get_rect()
+    while True:
+        clock.tick(30)
+    
+
+
+
+
+        pass
+    pg.display.update()
+
+          
+    if pressed[pg.K_LEFT]:
+        i-= 15
+        screen.blit(bg_img,(width+i, 0))
+
+    if pressed[pg.K_RIGHT]:
+        i += 15
+        screen.blit(bg_img,(width + i, 0))     
+    pg.display.update()
+pg.quit()
+
+ 
+def start():
+    # shows half the screen
+    blit(bg_img, 0, 0)
+    # and the other half copied
+    sub = grab(0, 0,   HW, HH)
+    blit(sub, W, 0)
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    quit()
+        pg.display.update()
+        clock.tick(60)
+ 
+# 119 x 175
+
+ 
+start()
+
